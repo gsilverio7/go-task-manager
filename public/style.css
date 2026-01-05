@@ -1,0 +1,319 @@
+/* --- Variáveis de Cor (Paleta Suave/Shadcn) --- */
+:root {
+    --background: #fafafa; /* Off-white para menos brilho */
+    --foreground: #18181b;
+    --card: #ffffff;
+    --border: #e4e4e7;
+    --input: #f4f4f5;
+    --muted: #71717a;
+    --primary: #18181b;
+    --primary-foreground: #ffffff;
+    --secondary: #f4f4f5;
+    --accent: #27272a;
+    --radius: 0.4rem;
+}
+
+[data-theme="dark"] {
+    --background: #09090b; /* Preto profundo, mas não absoluto */
+    --foreground: #f4f4f5;
+    --card: #09090b;
+    --border: #27272a;
+    --input: #18181b;
+    --muted: #a1a1aa;
+    --primary: #f4f4f5;
+    --primary-foreground: #18181b;
+    --secondary: #18181b;
+    --accent: #27272a;
+}
+
+/* --- Reset e Base --- */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+
+body {
+    background-color: var(--background);
+    color: var(--foreground);
+    transition: all 0.3s ease;
+    line-height: 1.6;
+    padding: 1rem;
+}
+
+.container { max-width: 750px; margin: 0 auto; }
+
+/* --- Tipografia --- */
+header { font-weight: 600; font-size: 1.25rem; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* --- BOTÕES (Sistema Homogêneo) --- */
+button, .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--foreground);
+    gap: 0.5rem;
+
+    /* Remove o preenchimento azul ao tocar no mobile (WebKit) */
+    -webkit-tap-highlight-color: transparent;
+
+    /* Impede a seleção de texto ao clicar/tocar no botão */
+    user-select: none;
+    -webkit-user-select: none;
+    
+    /* Melhora a responsividade do toque */
+    touch-action: manipulation;
+}
+
+/* Variante: Primário (Destaque para Login/Salvar) */
+#login-screen button[type="submit"], .btn-primary {
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+}
+
+button:hover {
+    background-color: var(--secondary);
+    border-color: var(--muted);
+}
+
+button[type="submit"]:hover {
+    opacity: 0.9;
+}
+
+/* --- Formulários --- */
+input, textarea, select {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--foreground);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+textarea { resize: vertical; min-height: 100px; }
+
+input:focus { border-color: var(--muted); }
+
+/* --- Tabela --- */
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+
+th {
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+
+tr:hover td { background-color: rgba(0,0,0,0.015); }
+[data-theme="dark"] tr:hover td { background-color: rgba(255,255,255,0.015); }
+
+/* --- Estados Especiais --- */
+.feito {
+    color: var(--muted) !important;
+    text-decoration: line-through;
+    opacity: 0.4;
+    font-style: italic;
+}
+
+/* --- Outros Elementos --- */
+#login-screen {
+    max-width: 380px;
+    margin: 15vh auto;
+    padding: 2.5rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    z-index: 100;
+}
+
+/* Modal */
+dialog {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    color: var(--foreground);
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 450px;
+    margin: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+dialog header {
+    display: flex;
+    justify-content: space-between; /* Empurra título para esquerda e X para direita */
+}
+
+dialog::backdrop { background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(2px); }
+
+/* Animações */
+.fade-in { animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 600px) {
+    .theme-toggle { top: auto; bottom: 1.5rem; right: 1.5rem; background: var(--card); }
+}
+
+/* Lógica de exibição dos ícones baseada no tema */
+[data-theme="light"] .sun-icon { display: none; }
+[data-theme="dark"] .moon-icon { display: none; }
+
+[data-theme="dark"] .sun-icon { display: block; }
+[data-theme="light"] .moon-icon { display: block; }
+
+/* Ajuste do Footer do Modal */
+dialog footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-top: 1.0rem;
+    border-top: 1px solid var(--border);
+    margin-top: 0.5rem;
+}
+
+/* --- Botão Fechar (X) --- */
+.close {
+    order: 2;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: color 0.2s;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: var(--foreground);
+}
+
+/* Criando o "X" via CSS caso não queira usar imagem */
+.close::after {
+    content: "×"; 
+}
+
+/* --- Estilização do Checkbox (Estilo Shadcn) --- */
+
+/* Container que envolve o checkbox e o texto */
+.checkbox-label {
+    display: flex;
+    flex-direction: row !important; /* Força ficar na mesma linha */
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* O input em si */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px; /* Mais quadrado, padrão Shadcn */
+    background-color: var(--card);
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 0; /* Remove margens automáticas */
+}
+
+/* Estado: Marcado */
+input[type="checkbox"]:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Ícone de Check (V) via CSS */
+input[type="checkbox"]::before {
+    content: "";
+    width: 0.6rem;
+    height: 0.6rem;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    background-color: var(--primary-foreground);
+    /* Desenha um check simples */
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+input[type="checkbox"]:checked::before {
+    transform: scale(1);
+}
+
+/* Hover e Foco */
+input[type="checkbox"]:hover {
+    border-color: var(--muted);
+}
+
+input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+}
+
+/* --- Ajuste de Espaçamento no Formulário --- */
+
+/* Adiciona espaço após cada campo para não colarem no próximo label */
+input, 
+textarea, 
+select {
+    margin-bottom: 0.75rem; /* Ajuste este valor se quiser mais ou menos espaço */
+}
+
+/* Garante que o label tenha um pequeno espaço em relação ao seu próprio input */
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+/* Remove a margem do último elemento dentro do form para não sobrar espaço no footer */
+#form-tarefa > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Ajuste específico para o checkbox, para ele não herdar a margem inferior grande */
+.checkbox-label {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem !important;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-bottom: 0; /* Remove a margem de 1.25rem apenas do checkbox */
+}

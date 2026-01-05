@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Tarefas</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Alternar Tema">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+    </button>
+    <main class="container">
+        <article id="login-screen">
+            <header>🔒 Acesso Restrito</header>
+            <form id="login-form">
+                <input type="password" id="password" placeholder="Digite a senha mestra" required>
+                <button type="submit">Entrar</button>
+            </form>
+        </article>
+
+        <section id="app-screen" style="display: none;">
+            <nav>
+                <strong>📌 Tarefas & Notas</strong>
+                <button onclick="logout()">Sair</button>
+            </nav>
+
+            <button onclick="abrirModal()">+ Nova Tarefa</button>
+
+            <table role="grid">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Nome</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-tarefas"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <dialog id="modal-tarefa">
+        <article>
+            <header>
+                <span id="modal-titulo">Tarefa</span>
+                <a href="#close" aria-label="Close" class="close" onclick="fecharModal()"></a>
+            </header>
+            <form id="form-tarefa">
+                <input type="hidden" id="task-id">
+                <label>Nome</label>
+                <input type="text" id="task-nome" required>
+                <label>Descrição</label>
+                <textarea id="task-desc"></textarea>
+                <label>Prioridade</label>
+                <select id="task-prioridade">
+                    <option value="1">Baixa</option>
+                    <option value="2">Média</option>
+                    <option value="3">Alta</option>
+                </select>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="task-feito"> Concluído
+                </label>
+                <footer>
+                    <button type="button" class="secondary" onclick="deletarTarefa()" id="btn-deletar">Excluir</button>
+                    <button type="submit">Salvar</button>
+                </footer>
+            </form>
+        </article>
+    </dialog>
+
+    <script src="script.js"></script>
+</body>
+</html>
