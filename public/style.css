@@ -20,6 +20,8 @@
 
     --blue-soft: #3b82f6;
     --blue-soft-bg: rgba(59, 130, 246, 0.08);
+
+    --yellow-soft: #ecec20;
 }
 
 [data-theme="dark"] {
@@ -363,4 +365,16 @@ button[onclick="abrirModal()"]:hover {
 
 #form-tarefa button[type="submit"]:hover {
     background-color: var(--green-soft-bg);
+}
+
+.prioridade-alta {
+    color: var(--red-soft);
+}
+
+.prioridade-media {
+    color: var(--yellow-soft);
+}
+
+.prioridade-baixa {
+    color: var(--green-soft);
 }

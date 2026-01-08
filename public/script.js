@@ -84,10 +84,21 @@ async function carregarTarefas() {
     listaTarefas.innerHTML = tarefas.map(t => `
         <tr>
             <td>${t.feito ? '✅' : '⏳'}</td>
-            <td class="${t.feito ? 'feito' : ''}">${t.nome}</td>
+            <td class="${t.feito ? 'feito' : ''}">
+                <span class="${classeCssPrioridade(t.prioridade)}">|</span> ${t.nome}
+            </td>
             <td><button onclick='abrirModal(${JSON.stringify(t)})'>Visualizar</button></td>
         </tr>
     `).join('');
+}
+
+function classeCssPrioridade(prioridade) {
+    switch (prioridade) {
+        case 3: return 'prioridade-alta';
+        case 2: return 'prioridade-media';
+        case 1: return 'prioridade-baixa';
+        default: return '';
+    }
 }
 
 // Modal e Operações
