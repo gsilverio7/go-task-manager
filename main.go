@@ -97,7 +97,7 @@ func main() {
 		if err := c.BodyParser(t); err != nil {
 			return err
 		}
-		res, _ := db.Exec("INSERT INTO tarefas (nome, descricao, feito, data_criacao) VALUES (?, ?, ?, ?)", t.Nome, t.Descricao, t.Feito, time.Now())
+		res, _ := db.Exec("INSERT INTO tarefas (nome, descricao, prioridade, feito, data_criacao) VALUES (?, ?, ?, ?, ?)", t.Nome, t.Descricao, t.Prioridade, t.Feito, time.Now())
 		id, _ := res.LastInsertId()
 		t.ID = int(id)
 		return c.Status(201).JSON(t)
