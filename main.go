@@ -8,7 +8,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	_ "github.com/mattn/go-sqlite3" // Driver SQLite
+	_ "github.com/mattn/go-sqlite3" // Driver SQLite C (mais performático)
+	//_ "modernc.org/sqlite" // Driver SQLite Go (mais fácil de usar)
 )
 
 // Estrutura do nosso dado (ex: uma lista de tarefas)
@@ -32,6 +33,7 @@ func main() {
 
 	// 1. Conectar ao SQLite (Cria o arquivo dados.db se não existir)
 	db, err := sql.Open("sqlite3", "./dados.db")
+	//db, err := sql.Open("sqlite", "./dados.db")
 	if err != nil {
 		log.Fatal(err)
 	}
