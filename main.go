@@ -38,8 +38,20 @@ func main() {
 	defer db.Close()
 
 	// Criar a tabela inicial
-	statement, _ := db.Prepare("CREATE TABLE IF NOT EXISTS tarefas (id INTEGER PRIMARY KEY, nome TEXT, descricao TEXT, feito BOOLEAN, prioridade INTEGER, data_criacao DATETIME, data_exclusao DATETIME)")
-	statement.Exec()
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS tarefas (
+			id INTEGER PRIMARY KEY, 
+			nome TEXT, 
+			descricao TEXT, 
+			feito BOOLEAN, 
+			prioridade INTEGER, 
+			data_criacao DATETIME, 
+			data_exclusao DATETIME
+		)
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	app := fiber.New()
 
