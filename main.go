@@ -62,7 +62,7 @@ func main() {
 	})
 
 	api.Get("/ping", func(c *fiber.Ctx) error {
-		return c.SendString("pong")
+		return c.JSON(fiber.Map{"pong": true})
 	})
 
 	// ROTA: Listar todas as tarefas (READ)

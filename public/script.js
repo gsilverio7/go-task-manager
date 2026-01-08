@@ -21,11 +21,16 @@ window.onload = () => {
 };
 
 // Login
-loginForm.onsubmit = (e) => {
+loginForm.onsubmit = async (e) => {
     e.preventDefault();
+
     const pass = document.getElementById('password').value;
     localStorage.setItem('app_password', pass);
-    showApp();
+
+    const res = await apiCall('/ping');
+    if (res.pong) {
+        showApp();
+    }
 };
 
 function logout() {
@@ -61,11 +66,6 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 }
 
 async function showApp() {
-    const pong = await apiCall('/ping');  // Verifica a senha antes de mostrar a tela
-    if (pong !== 'pong') {
-        return;
-    }
-
     // Remove qualquer animação anterior para resetar o estado
     loginScreen.classList.remove('fade-in');
     appScreen.classList.remove('fade-in');
