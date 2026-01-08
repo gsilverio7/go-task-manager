@@ -83,11 +83,24 @@ async function carregarTarefas() {
     const tarefas = await apiCall('/tarefas');
     listaTarefas.innerHTML = tarefas.map(t => `
         <tr>
-            <td>${t.feito ? '✅' : '⏳'}</td>
+            <td>${
+                t.feito 
+                    ? '<svg class="icon icon-lg icon-green" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M256 512a256 256 0 1 1 0-512 256 256 0 1 1 0 512zm0-464a208 208 0 1 0 0 416 208 208 0 1 0 0-416zm70.7 121.9c7.8-10.7 22.8-13.1 33.5-5.3 10.7 7.8 13.1 22.8 5.3 33.5L243.4 366.1c-4.1 5.7-10.5 9.3-17.5 9.8-7 .5-13.9-2-18.8-6.9l-55.9-55.9c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l36 36 105.6-145.2z"/></svg>' 
+                    : '<svg class="icon icon-lg icon-' + corPrioridade(t.prioridade) + '" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M464 256a208 208 0 1 1 -416 0 208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0 256 256 0 1 0 -512 0zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>'
+            }</td>
             <td class="${t.feito ? 'feito' : ''}">${t.nome}</td>
             <td><button onclick='abrirModal(${JSON.stringify(t)})'>Visualizar</button></td>
         </tr>
     `).join('');
+}
+
+function corPrioridade(prioridade) {
+    switch (prioridade) {
+        case 1: return 'blue';
+        case 2: return 'yellow';
+        case 3: return 'red';
+        default: return 'blue';
+    }
 }
 
 // Modal e Operações

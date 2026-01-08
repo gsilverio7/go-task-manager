@@ -20,6 +20,8 @@
 
     --blue-soft: #3b82f6;
     --blue-soft-bg: rgba(59, 130, 246, 0.08);
+
+    --yellow-soft: #e4e43e;
 }
 
 [data-theme="dark"] {
@@ -363,4 +365,38 @@ button[onclick="abrirModal()"]:hover {
 
 #form-tarefa button[type="submit"]:hover {
     background-color: var(--green-soft-bg);
+}
+
+.icon {
+    width: 12px;
+    top: 2px;
+    position: relative;
+}
+
+.icon-lg {
+    width: 16px;
+}
+
+.icon-xlg {
+    width: 20px;
+}
+
+.icon-blue {
+    fill: var(--blue-soft);
+}
+
+.icon-yellow {
+    fill: var(--yellow-soft);
+}
+
+.icon-red {
+    fill: var(--red-soft);
+}
+
+.icon-green {
+    fill: var(--green-soft);
+}
+
+.icon-foreground {
+    fill: var(--foreground);
 }
