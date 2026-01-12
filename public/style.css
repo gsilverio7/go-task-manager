@@ -49,7 +49,7 @@ body {
     padding: 1rem;
 }
 
-.container { max-width: 750px; margin: 0 auto; }
+.container { max-width: 1000px; margin: 0 auto; }
 
 /* --- Tipografia --- */
 header { font-weight: 600; font-size: 1.25rem; margin-bottom: 1.5rem; letter-spacing: -0.02em; }
@@ -117,6 +117,7 @@ input, textarea, select {
     font-size: 0.9rem;
     outline: none;
     transition: border-color 0.2s;
+    margin-bottom: 0.75rem; /* Ajuste este valor se quiser mais ou menos espaço */
 }
 
 textarea { resize: vertical; min-height: 100px; }
@@ -137,6 +138,15 @@ th {
 }
 
 td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+
+th:nth-child(1), th:nth-child(3) {
+    width: 8%; 
+    text-align: center;
+}
+
+td:nth-child(1), td:nth-child(3) {
+    text-align: center;
+}
 
 tr:hover td { background-color: rgba(0,0,0,0.015); }
 [data-theme="dark"] tr:hover td { background-color: rgba(255,255,255,0.015); }
@@ -237,18 +247,6 @@ dialog footer {
 
 /* --- Estilização do Checkbox (Estilo Shadcn) --- */
 
-/* Container que envolve o checkbox e o texto */
-.checkbox-label {
-    display: flex;
-    flex-direction: row !important; /* Força ficar na mesma linha */
-    align-items: center;
-    gap: 0.75rem;
-    cursor: pointer;
-    margin: 1rem 0;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
 /* O input em si */
 input[type="checkbox"] {
     appearance: none;
@@ -299,13 +297,6 @@ input[type="checkbox"]:focus-visible {
 
 /* --- Ajuste de Espaçamento no Formulário --- */
 
-/* Adiciona espaço após cada campo para não colarem no próximo label */
-input, 
-textarea, 
-select {
-    margin-bottom: 0.75rem; /* Ajuste este valor se quiser mais ou menos espaço */
-}
-
 /* Garante que o label tenha um pequeno espaço em relação ao seu próprio input */
 label {
     display: block;
@@ -320,10 +311,16 @@ label {
     margin-bottom: 0;
 }
 
-/* Ajuste específico para o checkbox, para ele não herdar a margem inferior grande */
+/* Ajuste específico para o checkbox */
 .checkbox-label {
-    margin-top: 0.5rem;
-    margin-bottom: 1rem !important;
+    display: flex;
+    flex-direction: row !important; /* Força ficar na mesma linha */
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    font-weight: 500;
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -349,7 +346,7 @@ nav button:hover {
     background-color: var(--red-soft-bg);
 }
 
-button[onclick="abrirModal()"], #login-form button {
+button[onclick="abrirModal()"], #login-form button, .btn-data-conclusao-agora, .btn-data-conclusao-limpar {
     border-color: var(--blue-soft);
     color: var(--blue-soft);
 }
@@ -377,4 +374,12 @@ button[onclick="abrirModal()"]:hover {
 
 .prioridade-baixa {
     color: var(--green-soft);
+}
+
+#task-data-conclusao {
+    width: 60%;
+}
+
+.btn-data-conclusao-agora {
+    width: 18%;
 }

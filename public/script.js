@@ -4,6 +4,8 @@ const loginForm = document.getElementById('login-form');
 const listaTarefas = document.getElementById('lista-tarefas');
 const modal = document.getElementById('modal-tarefa');
 const themeToggle = document.getElementById('theme-toggle');
+const btnDataConclusaoAgora = document.querySelector('.btn-data-conclusao-agora');
+const btnDataConclusaoLimpar = document.querySelector('.btn-data-conclusao-limpar');
 
 themeToggle.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -61,6 +63,12 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     if (res.status === 401) {
         alert("Senha incorreta!");
         logout();
+        return null;
+    }
+    if (res.status === 500) {
+        const data = await res.json();
+        alert("The request failed: \n \n" + data.error);
+        return null;
     }
     return res.status === 204 ? null : res.json();
 }
@@ -81,10 +89,15 @@ async function showApp() {
 
 async function carregarTarefas() {
     const tarefas = await apiCall('/tarefas');
+    if (!tarefas) {
+        listaTarefas.innerHTML = '';
+        return;
+    }
+
     listaTarefas.innerHTML = tarefas.map(t => `
         <tr>
-            <td>${t.feito ? '✅' : '⏳'}</td>
-            <td class="${t.feito ? 'feito' : ''}">
+            <td>${t.data_conclusao ? '✅' : '⏳'}</td>
+            <td class="${t.data_conclusao ? 'feito' : ''}">
                 <span class="${classeCssPrioridade(t.prioridade)}">|</span> ${t.nome}
             </td>
             <td><button onclick='abrirModal(${JSON.stringify(t)})'>Visualizar</button></td>
@@ -110,7 +123,7 @@ function abrirModal(tarefa = null) {
     if (tarefa) {
         document.getElementById('task-nome').value = tarefa.nome;
         document.getElementById('task-desc').value = tarefa.descricao;
-        document.getElementById('task-feito').checked = tarefa.feito;
+        document.getElementById('task-data-conclusao').value = tarefa.data_conclusao?.slice(0, 16) || null;
         document.getElementById('task-prioridade').value = tarefa.prioridade;        
     }
     modal.showModal();
@@ -124,7 +137,7 @@ document.getElementById('form-tarefa').onsubmit = async (e) => {
     const data = {
         nome: document.getElementById('task-nome').value,
         descricao: document.getElementById('task-desc').value,
-        feito: document.getElementById('task-feito').checked,
+        data_conclusao: getDataConclusaoForm(),
         prioridade: parseInt(document.getElementById('task-prioridade').value)
     };
 
@@ -136,6 +149,12 @@ document.getElementById('form-tarefa').onsubmit = async (e) => {
     fecharModal();
     carregarTarefas();
 };
+
+function getDataConclusaoForm() {
+    const v = document.getElementById('task-data-conclusao').value;
+    if (v.length === 0) return null;
+    return v.concat(':00Z');
+}
 
 async function deletarTarefa() {
     const id = document.getElementById('task-id').value;
@@ -154,3 +173,15 @@ modal.addEventListener('click', (e) => {
         modal.close();
     }
 });
+
+btnDataConclusaoAgora.addEventListener('click', () => {
+    const now = new Date()
+    now.setHours(now.getHours() - 3)
+    document.getElementById('task-data-conclusao').value = now.toISOString().slice(0, 16);
+})
+
+btnDataConclusaoLimpar.addEventListener('click', () => {
+    const now = new Date()
+    now.setHours(now.getHours() - 3)
+    document.getElementById('task-data-conclusao').value = null;
+})

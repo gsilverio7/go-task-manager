@@ -65,9 +65,10 @@
                     <option value="2">Média</option>
                     <option value="3">Alta</option>
                 </select>
-                <label class="checkbox-label">
-                    <input type="checkbox" id="task-feito"> Concluído
-                </label>
+                <label>Data Conclusão</label>
+                <input type="datetime-local" id="task-data-conclusao">
+                <span class="btn btn-data-conclusao-agora">Agora</span>
+                <span class="btn btn-data-conclusao-limpar">Limpar</span>
                 <footer>
                     <button type="button" class="secondary" onclick="deletarTarefa()" id="btn-deletar">Excluir</button>
                     <button type="submit">Salvar</button>

@@ -8,45 +8,46 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	_ "github.com/mattn/go-sqlite3" // Driver SQLite C (mais performático)
-	//_ "modernc.org/sqlite" // Driver SQLite Go (mais fácil de usar)
+
+	//_ "github.com/mattn/go-sqlite3" // Driver SQLite C (mais performático)
+	_ "modernc.org/sqlite" // Driver SQLite Go (mais fácil de usar)
 )
 
 // Estrutura do nosso dado (ex: uma lista de tarefas)
 type Tarefa struct {
-	ID           int       `json:"id"`
-	Nome         string    `json:"nome"`
-	Descricao    string    `json:"descricao"`
-	Feito        bool      `json:"feito"`
-	Prioridade   int       `json:"prioridade"`
-	DataCriacao  time.Time `json:"data_criacao"`
-	DataExclusao time.Time `json:"data_exclusao"`
+	ID            int        `json:"id"`
+	Nome          string     `json:"nome"`
+	Descricao     string     `json:"descricao"`
+	Prioridade    int        `json:"prioridade"`
+	DataConclusao *time.Time `json:"data_conclusao"`
+	DataCriacao   time.Time  `json:"data_criacao"`
+	DataExclusao  *time.Time `json:"data_exclusao"`
 }
 
-func main() {
-	// 0. Obter a senha da variável de ambiente (ou usar uma padrão se não houver)
+func getSenhaMestra() string {
 	senhaMestra := os.Getenv("APP_PASSWORD")
 	if senhaMestra == "" {
 		log.Println("AVISO: Variável APP_PASSWORD não definida. Usando 'admin123' por padrão.")
 		senhaMestra = "admin123"
 	}
 
-	// 1. Conectar ao SQLite (Cria o arquivo dados.db se não existir)
-	db, err := sql.Open("sqlite3", "./dados.db")
-	//db, err := sql.Open("sqlite", "./dados.db")
+	return senhaMestra
+}
+
+func dbSetup() *sql.DB {
+	//db, err := sql.Open("sqlite3", "./dados.db")
+	db, err := sql.Open("sqlite", "./dados.db")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 
-	// Criar a tabela inicial
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS tarefas (
 			id INTEGER PRIMARY KEY, 
 			nome TEXT, 
 			descricao TEXT, 
-			feito BOOLEAN, 
-			prioridade INTEGER, 
+			prioridade INTEGER,
+			data_conclusao DATETIME,
 			data_criacao DATETIME, 
 			data_exclusao DATETIME
 		)
@@ -55,6 +56,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	return db
+}
+
+func appSetup() *fiber.App {
 	app := fiber.New()
 
 	// Middleware de CORS para permitir acesso de qualquer origem (Outros hosts da rede local)
@@ -64,6 +69,10 @@ func main() {
 	// Deve vir ANTES do middleware de autenticação da API
 	app.Static("/", "./public")
 
+	return app
+}
+
+func apiSetup(app *fiber.App, db *sql.DB, senhaMestra string) {
 	// GRUPO DE API (Tudo que começar com /api será protegido)
 	api := app.Group("/api")
 
@@ -81,11 +90,15 @@ func main() {
 
 	// ROTA: Listar todas as tarefas (READ)
 	api.Get("/tarefas", func(c *fiber.Ctx) error {
-		rows, _ := db.Query("SELECT id, nome, descricao, prioridade, feito, data_criacao FROM tarefas WHERE data_exclusao IS NULL ORDER BY feito ASC, prioridade DESC")
+		rows, err := db.Query("SELECT id, nome, descricao, prioridade, data_conclusao, data_criacao FROM tarefas WHERE data_exclusao IS NULL ORDER BY data_conclusao DESC, prioridade DESC")
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
 		var tarefas []Tarefa
 		for rows.Next() {
 			var t Tarefa
-			rows.Scan(&t.ID, &t.Nome, &t.Descricao, &t.Prioridade, &t.Feito, &t.DataCriacao)
+			rows.Scan(&t.ID, &t.Nome, &t.Descricao, &t.Prioridade, &t.DataConclusao, &t.DataCriacao)
 			tarefas = append(tarefas, t)
 		}
 		return c.JSON(tarefas)
@@ -95,9 +108,13 @@ func main() {
 	api.Post("/tarefas", func(c *fiber.Ctx) error {
 		t := new(Tarefa)
 		if err := c.BodyParser(t); err != nil {
-			return err
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
-		res, _ := db.Exec("INSERT INTO tarefas (nome, descricao, prioridade, feito, data_criacao) VALUES (?, ?, ?, ?, ?)", t.Nome, t.Descricao, t.Prioridade, t.Feito, time.Now())
+
+		res, err := db.Exec("INSERT INTO tarefas (nome, descricao, prioridade, data_conclusao, data_criacao) VALUES (?, ?, ?, ?, ?)", t.Nome, t.Descricao, t.Prioridade, t.DataConclusao, time.Now())
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
 		id, _ := res.LastInsertId()
 		t.ID = int(id)
 		return c.Status(201).JSON(t)
@@ -108,11 +125,12 @@ func main() {
 		id := c.Params("id")
 		t := new(Tarefa)
 		if err := c.BodyParser(t); err != nil {
-			return err
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
-		_, err := db.Exec("UPDATE tarefas SET nome = ?, descricao = ?, prioridade = ?, feito = ? WHERE id = ?", t.Nome, t.Descricao, t.Prioridade, t.Feito, id)
+
+		_, err := db.Exec("UPDATE tarefas SET nome = ?, descricao = ?, prioridade = ?, data_conclusao = ? WHERE id = ?", t.Nome, t.Descricao, t.Prioridade, t.DataConclusao, id)
 		if err != nil {
-			return err
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
 		return c.JSON(t)
 	})
@@ -122,10 +140,23 @@ func main() {
 		id := c.Params("id")
 		_, err := db.Exec("UPDATE tarefas SET data_exclusao = ? WHERE id = ?", time.Now(), id)
 		if err != nil {
-			return err
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
 		return c.SendStatus(204)
 	})
+}
+
+func main() {
+	// 0. Obter a senha da variável de ambiente (ou usar uma padrão se não houver)
+	senhaMestra := getSenhaMestra()
+
+	// 1. Conectar ao SQLite e criar tabelas (Cria o arquivo dados.db se não existir)
+	db := dbSetup()
+	defer db.Close()
+
+	app := appSetup()
+
+	apiSetup(app, db, senhaMestra)
 
 	// 2. Rodar o servidor
 	log.Fatal(app.Listen(":9998"))
